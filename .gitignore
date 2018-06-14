@@ -1,5 +1,6 @@
 # Editor's backup
 *.*~
+*.bak
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
