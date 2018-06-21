@@ -47,11 +47,17 @@ def main():
   offset = None
 
   while True:
-    greet_bot.get_updates(offset)
-    last_update = greet_bot.get_last_update()
+    last_message = None
+    last_chat_id = None
+    last_username = None
+    last_firstname = None
+    last_text = None
 
     now = datetime.datetime.now()
     timestamp = now.strftime("%H:%M:%S")
+
+    greet_bot.get_updates(offset)
+    last_update = greet_bot.get_last_update()
 
     if last_update:
       hour = now.hour
@@ -65,15 +71,16 @@ def main():
 
         try:
           last_text = last_message['text']
-        except Exception as e:
-          last_text = None
+        except KeyError as e:
+          #last_text = None
           print("%s: Message: %s" % (timestamp, last_update['message']))
-          print(e.message)
+          print("%s: KeyError: %s" % (timestamp, e))
 
-      except Exception as e:
-        last_message = None
+      except KeyError as e:
+        #last_message = None
+        #last_text = None
         print("%s: Update: %s" % (timestamp, last_update))
-        print(e.message)
+        print("%s: KeyError: %s" % (timestamp, e))
 
 
       if last_text:
