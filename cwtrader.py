@@ -40,7 +40,7 @@ class BotHandler:
 
 token = '561732479:AAGlQ5W0Q_8PurdQLgzkZ-mXgXnemuZQd6M'
 greet_bot = BotHandler(token)
-greetings = ('здравствуй', 'привет', 'ку', 'здорово')
+greetings = ( 'ку', 'алоха', 'привет', 'превед', 'здорово', 'здарова', 'здравствуй')
 
 
 def main():
@@ -56,27 +56,44 @@ def main():
     if last_update:
       hour = now.hour
       last_update_id = last_update['update_id']
-      last_chat_text = last_update['message']['text']
-      last_chat_id = last_update['message']['chat']['id']
-      last_chat_name = last_update['message']['chat']['first_name']
 
-      print("%s: Name: %-10s Chat_id: %-10s Msg_id: %-10s Offset: %-10s Text: %s" %
-        (timestamp, last_chat_name, last_chat_id, last_update_id, offset, last_chat_text))
+      try:
+        last_message = last_update['message']
+        last_chat_id = last_message['chat']['id']
+        last_username = last_message['from']['username']
+        last_firstname = last_message['from']['first_name']
 
-      if last_chat_text.lower() in greetings:
-        if 5 <= hour < 11:
-          greet_bot.send_message(last_chat_id, "Доброе утро, {}".format(last_chat_name))
+        try:
+          last_text = last_message['text']
+        except Exception as e:
+          last_text = None
+          print("%s: Message: %s" % (timestamp, last_update['message']))
+          print(e.message)
 
-        elif 11 <= hour < 17:
-          greet_bot.send_message(last_chat_id, "Добрый день, {}".format(last_chat_name))
+      except Exception as e:
+        last_message = None
+        print("%s: Update: %s" % (timestamp, last_update))
+        print(e.message)
 
-        elif 17 <= hour < 23:
-          greet_bot.send_message(last_chat_id, "Добрый вечер, {}".format(last_chat_name))
 
+      if last_text:
+        print("%s: Username: %-10s Chat_id: %-10s Msg_id: %-10s Offset: %-10s Text: %s" %
+          (timestamp, last_username, last_chat_id, last_update_id, offset, last_text))
+
+        if last_text.lower() in greetings:
+          if 5 <= hour < 11:
+            greet_bot.send_message(last_chat_id, "Доброе утро, {}!".format(last_firstname))
+
+          elif 11 <= hour < 17:
+            greet_bot.send_message(last_chat_id, "Добрый день, {}!".format(last_firstname))
+
+          elif 17 <= hour < 23:
+            greet_bot.send_message(last_chat_id, "Добрый вечер, {}!".format(last_firstname))
+
+          else:
+            greet_bot.send_message(last_chat_id, "Доброй ночи, {}!".format(last_firstname))
         else:
-          greet_bot.send_message(last_chat_id, "Доброй ночи, {}".format(last_chat_name))
-      else:
-        greet_bot.send_message(last_chat_id, "Сам {}!".format(last_chat_text))
+          greet_bot.send_message(last_chat_id, "Сам {}!".format(last_text))
 
       offset = last_update_id + 1
     else:
@@ -84,8 +101,9 @@ def main():
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        exit()
+  try:
+    main()
+  except KeyboardInterrupt:
+    print("\nРабота прервана!")
+    exit()
 
